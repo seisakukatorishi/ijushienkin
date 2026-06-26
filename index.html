@@ -1,1 +1,1846 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="香取市UIJターン移住支援金の対象要件を、令和8年4月1日施行の交付要綱に基づいて確認するためのWebフォーム（非公式）">
+<title>香取市移住支援金 対象判定フォーム（非公式）</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;
+    font-size:16px;
+    line-height:1.7;
+    color:#212529;
+    background:#F4F6F9;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* Layout */
+  .container{max-width:760px;margin:0 auto;padding:20px 16px 80px}
+  header{text-align:center;padding:24px 0 16px}
+  h1{font-size:22px;color:#1F4E79;margin:0 0 8px;font-weight:700;line-height:1.4}
+  .subtitle{font-size:13px;color:#6C757D;margin:0}
+  .badge-unofficial{display:inline-block;background:#FFF3CD;color:#856404;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600;margin-left:6px}
+  /* Progress */
+  .progress-wrap{margin:16px 0 24px}
+  .progress-text{font-size:13px;color:#6C757D;margin-bottom:6px;display:flex;justify-content:space-between}
+  .progress-bar{height:6px;background:#E2E8EF;border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#2E75B6,#1F4E79);transition:width 0.4s ease;width:0%}
+  /* Card */
+  .card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);padding:24px;margin-bottom:16px}
+  .card h2{font-size:18px;color:#1F4E79;margin:0 0 8px;font-weight:700;line-height:1.4}
+  .card .step-label{font-size:12px;color:#2E75B6;font-weight:600;letter-spacing:0.5px;margin-bottom:8px;text-transform:uppercase}
+  .card-desc{font-size:14px;color:#495057;margin:0 0 20px;background:#F0F5FA;border-left:3px solid #2E75B6;padding:10px 12px;border-radius:0 6px 6px 0}
+  /* Question */
+  .q{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #EDEFF2}
+  .q:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
+  .q-num{display:inline-block;background:#1F4E79;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-right:6px;font-weight:600;letter-spacing:0.3px}
+  .q-label{font-size:15px;font-weight:600;color:#212529;margin-bottom:10px;line-height:1.6}
+  .q-hint{font-size:13px;color:#6C757D;margin:6px 0 10px;background:#FAFBFC;padding:8px 10px;border-radius:6px;border-left:2px solid #CED4DA}
+  .q-ref{font-size:11px;color:#8B96A3;margin-top:4px;font-style:normal}
+  /* Inputs */
+  .input,.select-input{width:100%;padding:10px 12px;font-size:15px;border:1px solid #CED4DA;border-radius:6px;background:#fff;font-family:inherit;color:#212529;-webkit-appearance:none;appearance:none}
+  .input:focus,.select-input:focus{outline:none;border-color:#2E75B6;box-shadow:0 0 0 3px rgba(46,117,182,0.15)}
+  /* 日付入力（年月日分割） */
+  .date-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .date-group .input{width:auto;flex:0 0 auto;text-align:center;padding-left:8px;padding-right:8px}
+  .date-yyyy{width:96px}
+  .date-mm,.date-dd{width:64px}
+  .date-sep{font-size:14px;color:#495057;flex-shrink:0;padding:0 2px}
+  .date-picker-row{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+  .date-picker-label{font-size:13px;color:#6C757D}
+  .date-picker{padding:8px 10px;font-size:14px;text-align:left;width:auto;flex:0 0 auto;min-width:160px}
+  /* 自動判定ステータス表示（read-only） */
+  .auto-status{padding:14px 16px;border-radius:8px;border:1px solid #CED4DA;background:#fff}
+  .auto-status-main{font-size:16px;font-weight:600;line-height:1.5}
+  .auto-status-note{font-size:12px;margin-top:6px;opacity:0.8;line-height:1.5}
+  .auto-status-recent{color:#155724;background:#D4EDDA;border-color:#C3E6CB}
+  .auto-status-planned{color:#1F4E79;background:#E8F1FA;border-color:#BFD7EC}
+  .auto-status-empty{color:#856404;background:#FFF3CD;border-color:#FFE69C}
+  .auto-status-empty .auto-status-main{font-weight:500}
+  .select-input{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M3 4.5L6 7.5L9 4.5' fill='none' stroke='%231F4E79' stroke-width='1.5'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+  /* Radio / Checkbox */
+  .radio-group,.check-group{display:flex;flex-direction:column;gap:8px}
+  .radio-group.inline{flex-direction:row;flex-wrap:wrap;gap:8px}
+  .radio-item,.check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid #CED4DA;border-radius:6px;cursor:pointer;background:#fff;transition:all 0.15s;min-height:44px}
+  .radio-item:hover,.check-item:hover{background:#F8FAFC;border-color:#2E75B6}
+  .radio-item input,.check-item input{margin-top:2px;flex-shrink:0;width:18px;height:18px;accent-color:#1F4E79}
+  .radio-item.selected,.check-item.selected{background:#E8F1FA;border-color:#1F4E79;border-width:2px;padding:9px 11px}
+  .radio-item-text{font-size:14px;color:#212529;flex:1;line-height:1.5}
+  .radio-item-text small{display:block;color:#6C757D;font-size:12px;margin-top:2px}
+  /* Yes/No buttons */
+  .yn-group{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .yn-btn{padding:12px 16px;border:2px solid #CED4DA;border-radius:6px;background:#fff;font-size:15px;font-weight:600;color:#495057;cursor:pointer;transition:all 0.15s;font-family:inherit;min-height:48px}
+  .yn-btn:hover{border-color:#1F4E79}
+  .yn-btn.selected[data-value="yes"]{background:#1F4E79;border-color:#1F4E79;color:#fff}
+  .yn-btn.selected[data-value="no"]{background:#B91D1D;border-color:#B91D1D;color:#fff}
+  /* Nav buttons */
+  .nav{display:flex;gap:10px;margin-top:24px}
+  .nav .btn{flex:1}
+  .btn{padding:12px 20px;border-radius:6px;border:none;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .btn-primary{background:#1F4E79;color:#fff}
+  .btn-primary:hover{background:#163B5C}
+  .btn-primary:disabled{background:#CED4DA;cursor:not-allowed}
+  .btn-secondary{background:#fff;color:#1F4E79;border:1px solid #CED4DA}
+  .btn-secondary:hover{background:#F4F6F9;border-color:#1F4E79}
+  .btn-danger{background:#fff;color:#B91D1D;border:1px solid #E5C2C2}
+  .btn-danger:hover{background:#FBEDED}
+  /* Alert */
+  .alert{padding:14px 16px;border-radius:8px;margin:12px 0;font-size:14px;line-height:1.6}
+  .alert-warn{background:#FFF3CD;color:#856404;border:1px solid #FFE69C}
+  .alert-error{background:#F8D7DA;color:#721C24;border:1px solid #F5C6CB}
+  .alert-info{background:#E8F1FA;color:#1F4E79;border:1px solid #BFD7EC}
+  .alert-success{background:#D4EDDA;color:#155724;border:1px solid #C3E6CB}
+  /* Result */
+  .result-icon{font-size:48px;text-align:center;margin-bottom:8px}
+  .result-title{text-align:center;font-size:24px;font-weight:700;margin:0 0 8px}
+  .result-title.ok{color:#155724}
+  .result-title.warn{color:#856404}
+  .result-title.ng{color:#721C24}
+  .result-subtitle{text-align:center;font-size:14px;color:#6C757D;margin:0 0 24px}
+  .result-amount{background:linear-gradient(135deg,#1F4E79,#2E75B6);color:#fff;padding:20px;border-radius:10px;text-align:center;margin:16px 0}
+  .result-amount .label{font-size:13px;opacity:0.9;margin-bottom:4px}
+  .result-amount .value{font-size:32px;font-weight:700;letter-spacing:-0.5px}
+  .result-amount .breakdown{font-size:12px;opacity:0.9;margin-top:8px;line-height:1.5}
+  .doc-list{background:#F8FAFC;border-radius:8px;padding:16px;margin:12px 0}
+  .doc-list h4{margin:0 0 8px;font-size:14px;color:#1F4E79}
+  .doc-list ul{margin:0;padding-left:20px;font-size:13px;line-height:1.7}
+  .ng-reasons{background:#FBEDED;border-radius:8px;padding:16px;margin:12px 0}
+  .ng-reasons h4{margin:0 0 8px;font-size:14px;color:#721C24}
+  .ng-reasons ul{margin:0;padding-left:20px;font-size:13px;line-height:1.7;color:#721C24}
+  /* Misc */
+  .hidden{display:none !important}
+  .text-muted{color:#6C757D}
+  .text-danger{color:#B91D1D}
+  .small{font-size:13px}
+  .mt-2{margin-top:8px}
+  .mt-3{margin-top:12px}
+  .conditional-block{background:#F8FAFC;border-radius:8px;padding:14px;margin-top:10px;border-left:3px solid #2E75B6}
+  .conditional-block .q:last-child{border-bottom:none}
+  hr{border:none;border-top:1px solid #EDEFF2;margin:20px 0}
+  /* 診断項目の詳細テーブル */
+  .diag-h{font-size:15px;color:#1F4E79;margin:18px 0 8px}
+  .diag-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px}
+  .diag-table th,.diag-table td{border:1px solid #E2E8EF;padding:5px 9px;text-align:left;vertical-align:top}
+  .diag-table .diag-sec th{background:#EAF0F7;color:#1F4E79;font-size:12px;font-weight:700;letter-spacing:0.3px}
+  .diag-table .diag-k{width:52%;color:#495057;background:#FAFBFC}
+  .diag-table .diag-v{font-weight:600;color:#212529}
+  .diag-foot{margin-top:6px}
+  footer{text-align:center;font-size:12px;color:#8B96A3;padding:20px 0;line-height:1.6}
+  footer a{color:#2E75B6}
+  /* Responsive */
+  @media (max-width:480px){
+    .container{padding:12px 12px 60px}
+    h1{font-size:19px}
+    .card{padding:18px 16px}
+    .card h2{font-size:16px}
+    .q-label{font-size:14px}
+    .result-amount .value{font-size:26px}
+    .yn-group{grid-template-columns:1fr 1fr;gap:8px}
+    .nav{flex-direction:column-reverse}
+    .nav .btn{width:100%}
+  }
+  /* Print：診断項目は網羅しつつ、簡潔な様式で結果のみを出力 */
+  @media print{
+    @page{margin:14mm}
+    body{background:#fff;font-size:12px;color:#000}
+    .container{max-width:none;padding:0}
+    header{padding:0 0 6px;text-align:left}
+    h1{font-size:16px;margin:0}
+    .subtitle,.badge-unofficial{display:none}
+    .progress-wrap,.nav,.btn,footer{display:none !important}
+    /* 表示中の結果画面のみ印刷。非表示の各STEPは印刷しない */
+    .screen.hidden{display:none !important}
+    .card{box-shadow:none;border:none;padding:0;margin:0}
+    .result-icon{font-size:22px;margin-bottom:2px}
+    .result-title{font-size:18px;margin-bottom:2px}
+    .result-subtitle{font-size:12px;margin-bottom:10px}
+    .result-amount{padding:10px;margin:10px 0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .result-amount .value{font-size:22px}
+    .alert{padding:8px 10px;margin:8px 0;border:1px solid #CCC}
+    .doc-list,.ng-reasons{padding:10px;margin:8px 0;border:1px solid #DDD}
+    .diag-h{margin:12px 0 6px;font-size:13px}
+    .diag-table{font-size:11px;margin-bottom:6px}
+    .diag-table th,.diag-table td{padding:3px 6px}
+    .diag-table .diag-sec th{background:#EAF0F7 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    tr{page-break-inside:avoid}
+    hr{margin:10px 0}
+  }
+</style>
+</head>
+<body>
+<div class="container">
 
+  <header>
+    <h1>香取市移住支援金 対象判定フォーム<span class="badge-unofficial">非公式</span></h1>
+    <p class="subtitle">UIJターン起業・就業者等創出事業移住支援金（令和8年4月1日施行 告示第99号）</p>
+  </header>
+
+  <div class="progress-wrap" id="progress-wrap" style="display:none">
+    <div class="progress-text">
+      <span id="progress-label">STEP 0 / 9</span>
+      <span id="progress-percent">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <main id="screens">
+
+    <!-- ===== Welcome ===== -->
+    <section class="screen card" id="screen-welcome">
+      <h2>はじめに</h2>
+      <p>このフォームは、香取市の<strong>「対象要件確認サポートシート」</strong>をベースに、Web上で対象要件を確認できるようにしたものです。</p>
+      <p class="small text-muted">所要時間の目安：5〜10分／全9STEP（選択により表示が変わります）</p>
+      <div class="alert alert-warn">
+        <strong>ご注意：</strong> このフォームは確認用の参考ツールです。最終的な交付の判断は香取市が要綱に基づいて行います。申請の期限は<strong>申請する年度の2月末日</strong>までです。早めに香取市にご相談ください。
+      </div>
+      <div class="alert alert-info">
+        <strong>支援金額の目安：</strong><br>
+        ・単身世帯：60万円　・2人以上の世帯：100万円<br>
+        ・18歳未満の世帯員加算：1人につき100万円（最大200万円）
+      </div>
+      <div class="nav">
+        <button class="btn btn-primary" onclick="startForm()">診断を始める →</button>
+      </div>
+    </section>
+
+    <!-- ===== STEP 0: 基本情報 ===== -->
+    <section class="screen card hidden" id="screen-step0">
+      <div class="step-label">STEP 0 / 9</div>
+      <h2>基本情報・申請タイプの選択</h2>
+      <p class="card-desc">まず、申請するタイプを選択してください。以降のSTEPは選択内容に応じて表示が変わります。</p>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">0-1</span> お名前（任意）</div>
+        <input type="text" class="input" id="q-name" placeholder="例：千葉 太郎">
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">0-2</span> 香取市への転入日（住民票を移した日）</div>
+        <div class="date-group">
+          <input type="text" inputmode="numeric" maxlength="4" pattern="[0-9]*" class="input date-yyyy" id="q-transfer-year" placeholder="YYYY" aria-label="年">
+          <span class="date-sep">年</span>
+          <input type="text" inputmode="numeric" maxlength="2" pattern="[0-9]*" class="input date-mm" id="q-transfer-month" placeholder="MM" aria-label="月">
+          <span class="date-sep">月</span>
+          <input type="text" inputmode="numeric" maxlength="2" pattern="[0-9]*" class="input date-dd" id="q-transfer-day" placeholder="DD" aria-label="日">
+          <span class="date-sep">日</span>
+        </div>
+        <div class="date-picker-row">
+          <label class="date-picker-label" for="q-transfer-picker">カレンダーから選択：</label>
+          <input type="date" id="q-transfer-picker" class="input date-picker" aria-label="転入日をカレンダーから選択">
+        </div>
+        <div id="date-warning" class="alert alert-error hidden mt-2"></div>
+        <div class="q-hint">これから転入予定の方は、予定日を入力してください。</div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">0-3</span> 申請する金額タイプを選択してください <span class="text-danger">*</span></div>
+        <div class="radio-group" data-target="household">
+          <label class="radio-item">
+            <input type="radio" name="household" value="single">
+            <span class="radio-item-text">単身（1人）で申請　<small>支給額：60万円</small></span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="household" value="multiple">
+            <span class="radio-item-text">2人以上の世帯で申請　<small>支給額：100万円　※STEP 4が表示されます</small></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="q" id="q-0-4-wrap">
+        <div class="q-label"><span class="q-num">0-4</span> 18歳未満の世帯員加算を希望しますか？</div>
+        <div class="radio-group" data-target="minor-addition">
+          <label class="radio-item">
+            <input type="radio" name="minor-addition" value="yes">
+            <span class="radio-item-text">希望する（帯同する18歳未満の世帯員がいる）　<small>1人につき100万円加算・最大2人　※STEP 5が表示されます</small></span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="minor-addition" value="no">
+            <span class="radio-item-text">希望しない</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">0-5</span> 申請タイプを選択してください <span class="text-danger">*</span></div>
+        <div class="radio-group" data-target="app-type">
+          <label class="radio-item">
+            <input type="radio" name="app-type" value="employment">
+            <span class="radio-item-text">就職　<small>「千葉県しごとNAVI」に掲載のお仕事に就いて移住した方（一般・専門人材を含む）</small></span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="app-type" value="telework">
+            <span class="radio-item-text">テレワーク　<small>移住元の業務をテレワークで継続する方</small></span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="app-type" value="relation">
+            <span class="radio-item-text">関係人口　<small>市内または隣接自治体で就業・イベント参加・居住経験などで香取市と関わりがある方</small></span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="app-type" value="entrepreneur">
+            <span class="radio-item-text">起業　<small>千葉県産業振興センターの起業支援金交付決定を受けた方</small></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="goBack()">← 戻る</button>
+        <button class="btn btn-primary" onclick="nextScreen()">次へ →</button>
+      </div>
+    </section>
+
+    <!-- ===== STEP 1: 移住元 ===== -->
+    <section class="screen card hidden" id="screen-step1">
+      <div class="step-label">STEP 1 / 9</div>
+      <h2>STEP 1：転入前のこと（移住元）</h2>
+      <p class="card-desc">転入前にお住まいだった地域・通勤先について確認します。<span class="q-ref">（要綱 別表第1の1）</span></p>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">1-1</span> 住民票を移す直前にお住まいだった都道府県を選択してください <span class="text-danger">*</span></div>
+        <select class="select-input" id="q-origin-pref" onchange="updateMunicipalityOptions()">
+          <option value="">-- 選択してください --</option>
+          <option value="tokyo23">東京23区内</option>
+          <option value="tokyo">東京都（23区外）</option>
+          <option value="saitama">埼玉県</option>
+          <option value="kanagawa">神奈川県</option>
+          <option value="other">その他の道府県</option>
+        </select>
+      </div>
+
+      <!-- 23区 selector -->
+      <div class="q hidden" id="q-ward-wrap">
+        <div class="q-label"><span class="q-num">1-1-a</span> 23区のうちどこにお住まいでしたか？</div>
+        <select class="select-input" id="q-origin-ward">
+          <option value="">-- 選択してください --</option>
+        </select>
+        <div class="q-hint">いずれの区も移住元の対象です。</div>
+      </div>
+
+      <!-- 市区町村 selector (for 東京圏 outside 23区) -->
+      <div class="q hidden" id="q-muni-wrap">
+        <div class="q-label"><span class="q-num">1-1-b</span> 市区町村を選択してください</div>
+        <select class="select-input" id="q-origin-muni" onchange="checkDisadvantagedArea()">
+          <option value="">-- 選択してください --</option>
+        </select>
+        <div id="muni-warning" class="alert alert-error hidden mt-2"></div>
+      </div>
+
+      <div class="q hidden" id="q-1-1-wrap">
+        <div class="q-label"><span class="q-num">1-1</span> 住民票を移す直前の<strong>10年間</strong>のうち、<strong>通算5年以上</strong>、東京23区内に在住、または東京圏（条件不利地域を除く）に在住して<strong>東京23区へ通勤</strong>していましたか？</div>
+        <div class="q-hint">「条件不利地域」とは、過疎地域・山村・離島・半島・小笠原諸島の指定区域を含む市町村（前の質問で選択した市区町村が該当する場合は警告が表示されます）。<br>通算5年は<strong>合算可</strong>（10年のうち合計5年が対象地域内であれば、対象地域外に居住していた期間があってもOK）。</div>
+        <div class="yn-group" data-target="yn-1-1">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+        <div class="q-ref">要綱 別表第1の1(1)</div>
+      </div>
+
+      <div class="q hidden" id="q-1-2-wrap">
+        <div class="q-label"><span class="q-num">1-2</span> 住民票を移す直前に、<strong>連続1年以上</strong>、東京23区内に在住、または<strong>千葉県を除く</strong>東京圏（条件不利地域を除く）に在住して東京23区へ通勤していましたか？</div>
+        <div class="q-hint">東京23区への通勤期間は、住民票を移す3か月前までを1年の起算点にできます。</div>
+        <div class="yn-group" data-target="yn-1-2">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+        <div class="q-ref">要綱 別表第1の1(2)</div>
+      </div>
+
+      <div class="q hidden" id="q-1-3-wrap">
+        <div class="q-label"><span class="q-num">1-3</span> 東京23区への通勤について、雇用形態はどれに該当しますか？</div>
+        <div class="radio-group" data-target="commute-type">
+          <label class="radio-item">
+            <input type="radio" name="commute-type" value="employee">
+            <span class="radio-item-text">会社員として通勤（雇用保険の被保険者）</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="commute-type" value="owner">
+            <span class="radio-item-text">法人経営者・個人事業主として通勤</span>
+          </label>
+          <label class="radio-item" id="commute-type-none-wrap">
+            <input type="radio" name="commute-type" value="none">
+            <span class="radio-item-text">通勤なし（東京23区内に在住のみ）</span>
+          </label>
+        </div>
+        <div class="q-ref">要綱 別表第1の1（雇用者の通勤は雇用保険被保険者期間に限る）</div>
+      </div>
+
+      <div class="q hidden" id="q-1-4-wrap">
+        <div class="q-label"><span class="q-num">1-4</span> 大学通学の特例に該当しますか？</div>
+        <div class="q-hint">東京圏（条件不利地域以外）に在住しつつ、東京23区内の大学等に通学し、卒業後に東京23区内の法人・企業等へ就職した経験がある場合、通学期間も移住元の対象期間に含められます。</div>
+        <div class="yn-group" data-target="yn-1-4">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">該当する</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">該当しない</button>
+        </div>
+        <div class="q-ref">要綱 別表第1の1 ただし書き</div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="goBack()">← 戻る</button>
+        <button class="btn btn-primary" onclick="nextScreen()">次へ →</button>
+      </div>
+    </section>
+
+    <!-- ===== STEP 2: 移住先 ===== -->
+    <section class="screen card hidden" id="screen-step2">
+      <div class="step-label">STEP 2 / 9</div>
+      <h2>STEP 2：香取市に来てからのこと（移住先）</h2>
+      <p class="card-desc">転入状況と居住の意思について確認します。<span class="q-ref">（要綱 別表第1の2）</span></p>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">2-1</span> 香取市への転入状況</div>
+        <div class="q-hint">STEP 0で入力された転入日から自動的に判定されます。修正する場合は「← 戻る」でSTEP 0に戻ってください。</div>
+        <div class="auto-status auto-status-empty" id="q-2-1-display">
+          <div class="auto-status-main">—</div>
+          <div class="auto-status-note">転入日が未入力です。</div>
+        </div>
+        <div class="q-ref">要綱 別表第1の2(1)(2)</div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">2-2</span> 申請日から<strong>5年以上</strong>、継続して香取市に居住する予定ですか？</div>
+        <div class="yn-group" data-target="yn-2-2">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+        <div class="q-ref">要綱 別表第1の2(3)</div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="goBack()">← 戻る</button>
+        <button class="btn btn-primary" onclick="nextScreen()">次へ →</button>
+      </div>
+    </section>
+
+    <!-- ===== STEP 3: その他の条件 ===== -->
+    <section class="screen card hidden" id="screen-step3">
+      <div class="step-label">STEP 3 / 9</div>
+      <h2>STEP 3：その他の条件</h2>
+      <p class="card-desc">在留資格・市税等の滞納・過去の受給歴・自治会加入などの基本要件を確認します。<span class="q-ref">（要綱 別表第1の3）</span></p>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">3-1</span> 暴力団員ではないですか？</div>
+        <div class="yn-group" data-target="yn-3-1">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい（暴力団員ではない）</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">3-2</span> 暴力団・暴力団員を利用したり、金品等を渡したり、暴力団員と知って契約を結んだりしたことはないですか？</div>
+        <div class="yn-group" data-target="yn-3-2">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい（ない）</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">3-3</span> 暴力団・暴力団員と、社会的に非難される関係はないですか？</div>
+        <div class="yn-group" data-target="yn-3-3">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい（ない）</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">3-4</span> 国籍・在留資格を選択してください <span class="text-danger">*</span></div>
+        <select class="select-input" id="q-residence">
+          <option value="">-- 選択してください --</option>
+          <option value="japanese">日本国籍</option>
+          <option value="permanent">永住者　／在留カード「永住者」・在留期間「無期限」</option>
+          <option value="spouse-japanese">日本人の配偶者等</option>
+          <option value="spouse-permanent">永住者の配偶者等</option>
+          <option value="settler">定住者　／日系3世・難民認定者など</option>
+          <option value="special-permanent">特別永住者　／特別永住者証明書をお持ちの方</option>
+          <option value="other-status">上記以外の在留資格（技術・人文知識・国際業務／留学／家族滞在／特定技能／技能実習など）</option>
+        </select>
+        <div class="q-ref">要綱 別表第1の3(4)・出入国管理及び難民認定法 別表第2</div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">3-5</span> 直近の<strong>市税等</strong>に滞納はありませんか？</div>
+        <div class="yn-group" data-target="yn-3-5">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい（滞納なし）</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ（滞納あり）</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">3-6</span> あなた自身、および現在同一世帯の方は、過去にこの移住支援金を受給したことがないですか？</div>
+        <div class="yn-group" data-target="yn-3-6">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい（ない）</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ（ある）</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">3-7</span> 転入先で、自治会に加入するよう努める意思はありますか？</div>
+        <div class="yn-group" data-target="yn-3-7">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+        <div class="q-ref">要綱 別表第1の3(7)</div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="goBack()">← 戻る</button>
+        <button class="btn btn-primary" onclick="nextScreen()">次へ →</button>
+      </div>
+    </section>
+
+    <!-- ===== STEP 4: 世帯 ===== -->
+    <section class="screen card hidden" id="screen-step4">
+      <div class="step-label">STEP 4 / 9</div>
+      <h2>STEP 4：2人以上の世帯で申請する方</h2>
+      <p class="card-desc">2人以上の世帯（100万円）で申請する場合の追加要件です。<span class="q-ref">（要綱 別表第1の4）</span></p>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">4-1</span> 転入前、申請する方を含む2人以上が同一世帯でしたか？</div>
+        <div class="yn-group" data-target="yn-4-1">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div id="q-4-2-to-4-4-wrap">
+        <div class="q">
+          <div class="q-label"><span class="q-num">4-2</span> 申請する現在も、その2人以上が同一世帯ですか？</div>
+          <div class="yn-group" data-target="yn-4-2">
+            <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+            <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-label"><span class="q-num">4-3</span> 世帯員全員が、申請時点で転入から1年以内ですか？</div>
+          <div class="yn-group" data-target="yn-4-3">
+            <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+            <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-label"><span class="q-num">4-4</span> 世帯員全員が STEP 3 の条件（暴力団員でない・在留資格・市税等滞納なし等）にあてはまりますか？</div>
+          <div class="yn-group" data-target="yn-4-4">
+            <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+            <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info hidden" id="q-4-1-no-notice">
+        4-1が「いいえ」のため、4-2〜4-4はすべて「いいえ」として扱われます。世帯要件を満たさないため、単身（60万円）での申請に切替判定され、STEP 5（18歳未満加算）も省略されます。
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="goBack()">← 戻る</button>
+        <button class="btn btn-primary" onclick="nextScreen()">次へ →</button>
+      </div>
+    </section>
+
+    <!-- ===== STEP 5: 18歳未満加算 ===== -->
+    <section class="screen card hidden" id="screen-step5">
+      <div class="step-label">STEP 5 / 9</div>
+      <h2>STEP 5：18歳未満の世帯員加算</h2>
+      <p class="card-desc">18歳未満の世帯員を帯同する場合、1人につき100万円を加算します（最大2人・200万円）。<span class="q-ref">（要綱 別表第1の5）</span></p>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">5-0</span> 帯同する18歳未満の世帯員は何人ですか？</div>
+        <div class="radio-group inline" data-target="minor-count">
+          <label class="radio-item" style="flex:1">
+            <input type="radio" name="minor-count" value="1">
+            <span class="radio-item-text">1人（+100万円）</span>
+          </label>
+          <label class="radio-item" style="flex:1">
+            <input type="radio" name="minor-count" value="2">
+            <span class="radio-item-text">2人以上（+200万円・上限）</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">5-1</span> 帯同する世帯員は、申請する年度の<strong>4月1日時点で18歳未満</strong>ですか？</div>
+        <div class="yn-group" data-target="yn-5-1">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">全員はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">5-2</span> 帯同する世帯員は、支援金の申請者本人ではないですか？</div>
+        <div class="yn-group" data-target="yn-5-2">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">全員はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">5-3</span> 帯同する世帯員は、申請者の配偶者ではないですか？</div>
+        <div class="yn-group" data-target="yn-5-3">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">全員はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="goBack()">← 戻る</button>
+        <button class="btn btn-primary" onclick="nextScreen()">次へ →</button>
+      </div>
+    </section>
+
+    <!-- ===== STEP 6: 就職 ===== -->
+    <section class="screen card hidden" id="screen-step6">
+      <div class="step-label">STEP 6 / 9</div>
+      <h2>STEP 6：就職で申請する方</h2>
+      <p class="card-desc">勤務先・雇用形態について確認します。<span class="q-ref">（要綱 別表第2）</span></p>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">6-0</span> 千葉県のプロフェッショナル人材戦略拠点事業、または先導的人材マッチング支援事業を利用して就業しましたか？</div>
+        <div class="radio-group" data-target="pro-program">
+          <label class="radio-item">
+            <input type="radio" name="pro-program" value="yes">
+            <span class="radio-item-text">利用した（専門人材枠で申請）　<small>別表第2の2</small></span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="pro-program" value="no">
+            <span class="radio-item-text">利用していない（一般就職枠で申請）　<small>別表第2の1</small></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">6-1</span> 勤務地は<strong>千葉県内の条件不利地域</strong>にありますか？該当する市町村を選択してください <span class="text-danger">*</span></div>
+        <select class="select-input" id="q-work-location">
+          <option value="">-- 選択してください --</option>
+          <optgroup label="千葉県内の条件不利地域（市）">
+            <option value="銚子市">銚子市</option>
+            <option value="館山市">館山市</option>
+            <option value="旭市">旭市</option>
+            <option value="勝浦市">勝浦市</option>
+            <option value="鴨川市">鴨川市</option>
+            <option value="富津市">富津市</option>
+            <option value="いすみ市">いすみ市</option>
+            <option value="南房総市">南房総市</option>
+            <option value="匝瑳市">匝瑳市</option>
+            <option value="香取市">香取市</option>
+            <option value="山武市">山武市</option>
+          </optgroup>
+          <optgroup label="千葉県内の条件不利地域（町村）">
+            <option value="栄町">栄町</option>
+            <option value="多古町">多古町</option>
+            <option value="東庄町">東庄町</option>
+            <option value="九十九里町">九十九里町</option>
+            <option value="芝山町">芝山町</option>
+            <option value="横芝光町">横芝光町</option>
+            <option value="白子町">白子町</option>
+            <option value="長柄町">長柄町</option>
+            <option value="長南町">長南町</option>
+            <option value="大多喜町">大多喜町</option>
+            <option value="御宿町">御宿町</option>
+            <option value="鋸南町">鋸南町</option>
+          </optgroup>
+          <option value="other">上記以外の市区町村</option>
+        </select>
+        <div id="work-location-warning" class="alert alert-error hidden mt-2">勤務地が条件不利地域外のため、就職枠の対象外となります。</div>
+        <div class="q-ref">要綱 別表第2の1(1)・2(1)</div>
+      </div>
+
+      <!-- 一般就職枠の追加質問 -->
+      <div id="step6a-extra" class="hidden">
+        <div class="q">
+          <div class="q-label"><span class="q-num">6A-2</span> 就業先の求人は、<strong>「千葉県しごとNAVI」</strong>に掲載されていましたか？</div>
+          <div class="yn-group" data-target="yn-6A-2">
+            <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+            <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ／不明</button>
+          </div>
+          <div class="q-ref">要綱 別表第2の1(2)</div>
+        </div>
+
+        <div class="q">
+          <div class="q-label"><span class="q-num">6A-3</span> 就業先は、あなたの<strong>3親等以内の親族</strong>が代表者・取締役などの経営者を務める法人ではないですか？</div>
+          <div class="yn-group" data-target="yn-6A-3">
+            <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい（親族経営ではない）</button>
+            <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ（親族経営）</button>
+          </div>
+          <div class="q-ref">要綱 別表第2の1(3)</div>
+        </div>
+
+        <div class="q">
+          <div class="q-label"><span class="q-num">6A-5</span> 求人への応募日は、<strong>「千葉県しごとNAVI」</strong>に対象として掲載された日<strong>以降</strong>ですか？</div>
+          <div class="yn-group" data-target="yn-6A-5">
+            <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい（掲載日以降）</button>
+            <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ（掲載日より前）</button>
+          </div>
+          <div class="q-ref">要綱 別表第2の1(5)</div>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num" id="q-6-x4">6A-4</span> <strong>週20時間以上</strong>の<strong>無期雇用契約</strong>（期間の定めのない雇用）に基づいて就業していますか？</div>
+        <div class="yn-group" data-target="yn-6-week20h">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num" id="q-6-x6">6A-6</span> 就業先で、申請日から<strong>5年以上</strong>継続して勤務する予定ですか？</div>
+        <div class="yn-group" data-target="yn-6-5year">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num" id="q-6-x7">6A-7</span> 転勤・出向・出張・研修などではなく、<strong>新規の雇用</strong>ですか？</div>
+        <div class="yn-group" data-target="yn-6-newhire">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい（新規雇用）</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ（異動・派遣等）</button>
+        </div>
+      </div>
+
+      <!-- 専門人材の追加質問 -->
+      <div id="step6b-extra" class="hidden">
+        <div class="q">
+          <div class="q-label"><span class="q-num">6B-5</span> 目的達成後の解散を前提としたプロジェクト参加等、<strong>離職前提</strong>の仕事ではないですか？</div>
+          <div class="yn-group" data-target="yn-6B-5">
+            <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい（離職前提ではない）</button>
+            <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ（離職前提である）</button>
+          </div>
+          <div class="q-ref">要綱 別表第2の2(5)</div>
+        </div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="goBack()">← 戻る</button>
+        <button class="btn btn-primary" onclick="nextScreen()">判定する →</button>
+      </div>
+    </section>
+
+    <!-- ===== STEP 7: テレワーク ===== -->
+    <section class="screen card hidden" id="screen-step7">
+      <div class="step-label">STEP 7 / 9</div>
+      <h2>STEP 7：テレワークで申請する方</h2>
+      <p class="card-desc">移住元の業務をテレワークで継続する方の要件を確認します。<span class="q-ref">（要綱 別表第3）</span></p>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">7-1</span> 所属先からの命令ではなく、<strong>自己の意思</strong>で移住し、香取市を生活の本拠として、引っ越し前の業務を引き続き行いますか？</div>
+        <div class="yn-group" data-target="yn-7-1">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">7-2</span> 香取市で、<strong>週20時間以上</strong>テレワークを実施しますか？</div>
+        <div class="yn-group" data-target="yn-7-2">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">7-3</span> あなたは<strong>労働基準法第9条</strong>に規定する労働者ですか？（会社等に雇用され給与を受けて働いている方）</div>
+        <div class="yn-group" data-target="yn-7-3">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">7-4</span> あなたを<strong>指揮監督する事業所</strong>は、香取市内に所在しないですか？</div>
+        <div class="yn-group" data-target="yn-7-4">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい（市外）</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ（市内）</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">7-5</span> 内閣府地方創生推進室の<strong>地域未来交付金（デジタル実装型）</strong>等から、所属先法人・企業を経由して資金提供を受けていないですか？</div>
+        <div class="q-hint">令和8年改正で「デジタル田園都市国家構想交付金」から「地域未来交付金（デジタル実装型）」に名称変更。</div>
+        <div class="yn-group" data-target="yn-7-5">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい（受けていない）</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ（受けている）</button>
+        </div>
+        <div class="q-ref">要綱 別表第3(5)</div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="goBack()">← 戻る</button>
+        <button class="btn btn-primary" onclick="nextScreen()">判定する →</button>
+      </div>
+    </section>
+
+    <!-- ===== STEP 8: 関係人口 ===== -->
+    <section class="screen card hidden" id="screen-step8">
+      <div class="step-label">STEP 8 / 9</div>
+      <h2>STEP 8：関係人口で申請する方</h2>
+      <p class="card-desc">支給対象者要件（1つ以上）と地域の担い手確保要件（1つ以上）の両方を満たす必要があります。<span class="q-ref">（要綱 別表第4）</span></p>
+
+      <h3 style="font-size:15px;color:#2E75B6;margin:20px 0 10px">8-A：支給対象者の要件（1つ以上に該当すること）</h3>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">8A-1〜5</span> 次のいずれかに該当しますか？（複数選択可）</div>
+        <div class="check-group" data-target="relation-a">
+          <label class="check-item">
+            <input type="checkbox" name="relation-a" value="A1">
+            <span class="radio-item-text">令和4年度以降の香取市の<strong>日帰り</strong>移住・関係人口イベントに、<strong>3回以上</strong>参加した</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="relation-a" value="A2">
+            <span class="radio-item-text">令和4年度以降の香取市の<strong>宿泊を伴う</strong>移住・関係人口イベントに参加した</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="relation-a" value="A3" onchange="toggleRelationA3()">
+            <span class="radio-item-text">香取市または<strong>隣接自治体</strong>で就業している（次の質問で就業先を選択）</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="relation-a" value="A4">
+            <span class="radio-item-text">香取市や地域団体が関わる地域づくり活動・自治会行事・地域イベントに、継続的に参加している</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="relation-a" value="A5">
+            <span class="radio-item-text">香取市に居住経験がある</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="q hidden" id="q-a3-location-wrap">
+        <div class="q-label"><span class="q-num">8A-3a</span> 香取市または隣接自治体のうち、就業先を選択してください</div>
+        <select class="select-input" id="q-relation-a3-location">
+          <option value="">-- 選択してください --</option>
+          <option value="香取市">香取市</option>
+          <optgroup label="香取市の隣接自治体">
+            <option value="旭市">旭市</option>
+            <option value="匝瑳市">匝瑳市</option>
+            <option value="成田市">成田市</option>
+            <option value="神崎町">神崎町</option>
+            <option value="多古町">多古町</option>
+            <option value="東庄町">東庄町</option>
+            <option value="稲敷市">稲敷市（茨城県）</option>
+            <option value="潮来市">潮来市（茨城県）</option>
+            <option value="神栖市">神栖市（茨城県）</option>
+          </optgroup>
+          <option value="other">上記以外</option>
+        </select>
+        <div id="a3-location-warning" class="alert alert-error hidden mt-2">上記以外の自治体は、関係人口要件の対象外です。</div>
+      </div>
+
+      <h3 style="font-size:15px;color:#2E75B6;margin:24px 0 10px">8-B：地域の担い手確保の要件（1つ以上に該当すること）</h3>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">8B-1〜2</span> 次のいずれかに該当しますか？（複数選択可）</div>
+        <div class="check-group" data-target="relation-b">
+          <label class="check-item">
+            <input type="checkbox" name="relation-b" value="B1">
+            <span class="radio-item-text">農林水産業その他の事業に従事する</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="relation-b" value="B2">
+            <span class="radio-item-text">地域づくり活動・地域課題の解決の取組に、恒常的に参加していて、移住後も続ける意向がある</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="goBack()">← 戻る</button>
+        <button class="btn btn-primary" onclick="nextScreen()">判定する →</button>
+      </div>
+    </section>
+
+    <!-- ===== STEP 9: 起業 ===== -->
+    <section class="screen card hidden" id="screen-step9">
+      <div class="step-label">STEP 9 / 9</div>
+      <h2>STEP 9：起業で申請する方</h2>
+      <p class="card-desc">千葉県産業振興センターの起業支援金（地域課題解決型起業支援事業）を活用された方の要件を確認します。<span class="q-ref">（要綱 別表第5）</span></p>
+
+      <div class="q">
+        <div class="q-label"><span class="q-num">9-1</span> 移住支援金の申請日までの<strong>1年以内</strong>に、起業支援金の交付決定を受けていますか？</div>
+        <div class="yn-group" data-target="yn-9-1">
+          <button type="button" class="yn-btn" data-value="yes" onclick="setYN(this)">はい</button>
+          <button type="button" class="yn-btn" data-value="no" onclick="setYN(this)">いいえ</button>
+        </div>
+      </div>
+
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="goBack()">← 戻る</button>
+        <button class="btn btn-primary" onclick="nextScreen()">判定する →</button>
+      </div>
+    </section>
+
+    <!-- ===== Result ===== -->
+    <section class="screen card hidden" id="screen-result">
+      <div id="result-content"></div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="restartForm()">最初からやり直す</button>
+        <button class="btn btn-primary" onclick="window.print()">印刷／PDF保存</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>本サイトは香取市の公式サイトではありません。<br>
+    最新の正確な情報は<a href="https://www.city.katori.lg.jp/government/plan_policy/ijuu_teijuu/ijushienkin.html" target="_blank" rel="noopener">香取市公式ページ</a>でご確認ください。</p>
+    <p style="margin-top:8px">準拠要綱：香取市UIJターンによる起業・就業者等創出事業移住支援金交付要綱（令和8年4月1日施行 告示第99号）</p>
+  </footer>
+
+</div>
+
+<script>
+// ========= データ定義 =========
+const TOKYO_23WARDS = ['千代田区','中央区','港区','新宿区','文京区','台東区','墨田区','江東区','品川区','目黒区','大田区','世田谷区','渋谷区','中野区','杉並区','豊島区','北区','荒川区','板橋区','練馬区','足立区','葛飾区','江戸川区'];
+
+// 東京圏の条件不利地域（移住元として対象外）
+const TOKYO_AREA_DISADVANTAGED = {
+  tokyo: ['檜原村','奥多摩町','大島町','利島村','新島村','御蔵島村','八丈町','青ヶ島村','小笠原村'],
+  saitama: ['秩父市','飯能市','本庄市','越生町','小川町','川島町','吉見町','鳩山町','ときがわ町','横瀬町','皆野町','長瀞町','小鹿野町','東秩父村','神川町'],
+  kanagawa: ['三浦市','山北町','箱根町','真鶴町','湯河原町','清川村']
+};
+
+// 千葉県の市町村（条件不利地域含む全件）
+const CHIBA_MUNICIPALITIES = ['千葉市','銚子市','市川市','船橋市','館山市','木更津市','松戸市','野田市','茂原市','成田市','佐倉市','東金市','旭市','習志野市','柏市','勝浦市','市原市','流山市','八千代市','我孫子市','鴨川市','鎌ケ谷市','君津市','富津市','浦安市','四街道市','袖ケ浦市','八街市','印西市','白井市','富里市','南房総市','匝瑳市','香取市','山武市','いすみ市','大網白里市','酒々井町','栄町','神崎町','多古町','東庄町','九十九里町','芝山町','横芝光町','一宮町','睦沢町','長生村','白子町','長柄町','長南町','大多喜町','御宿町','鋸南町'];
+
+// 千葉県の条件不利地域
+const CHIBA_DISADVANTAGED = ['銚子市','館山市','旭市','勝浦市','鴨川市','富津市','いすみ市','南房総市','匝瑳市','香取市','山武市','栄町','多古町','東庄町','九十九里町','芝山町','横芝光町','白子町','長柄町','長南町','大多喜町','御宿町','鋸南町'];
+
+// ========= 状態管理 =========
+const state = {
+  history: ['welcome'],
+  current: 'welcome',
+  answers: {},
+  forcedIssues: null
+};
+
+// ========= ナビゲーション =========
+function startForm(){
+  goTo('step0');
+  document.getElementById('progress-wrap').style.display='block';
+}
+
+function goTo(screenId){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  const target = document.getElementById('screen-'+screenId);
+  if(!target){console.error('Screen not found:',screenId);return;}
+  target.classList.remove('hidden');
+  state.current = screenId;
+  updateProgress(screenId);
+  // STEP 2 進入時：転入日から「転入済／転入予定」を最新化
+  if(screenId==='step2')updateTransferStatusDisplay();
+  // STEP 4 進入時：4-1の回答状態に応じて4-2〜4-4の表示を同期
+  if(screenId==='step4')enterStep4();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goBack(){
+  if(state.history.length<=1){return;}
+  state.history.pop();
+  const prev = state.history[state.history.length-1];
+  goTo(prev);
+}
+
+function nextScreen(){
+  if(!validateCurrentScreen()){return;}
+  const next = computeNextScreen();
+  // 終端の判定ステップ以外で、対象とならない選択をした時点で結果（対象外）を通知する
+  if(next && next!=='result'){
+    const earlyIssues = getStepIssues(state.current);
+    if(earlyIssues.length>0){
+      state.forcedIssues = earlyIssues;
+      state.history.push('result');
+      goTo('result');
+      renderResult();
+      return;
+    }
+  }
+  state.forcedIssues = null;
+  if(!next)return;
+  state.history.push(next);
+  goTo(next);
+  if(next==='result'){renderResult();}
+}
+
+// 現在のSTEPで、その時点で確定的に対象外となる選択をチェックする
+function getStepIssues(screen){
+  const a = state.answers;
+  const issues = [];
+  switch(screen){
+    case 'step0': {
+      // 0-2 転入日が本日から1年以上前 → 対象外
+      if(isTransferDateOver1Year(a['q-transfer-date'])){
+        issues.push('転入日（' + a['q-transfer-date'] + '）が本日から1年以上前のため対象外（別表第1の2(2)：転入後1年以内に申請）');
+      }
+      break;
+    }
+    case 'step1': {
+      const pref = a['q-origin-pref'], muni = a['q-origin-muni'];
+      if(pref==='other')issues.push('移住元が東京圏外（別表第1の1）');
+      if(pref==='chiba' && CHIBA_DISADVANTAGED.includes(muni))issues.push('移住元が千葉県の条件不利地域（別表第1の1）');
+      if(pref && pref!=='chiba' && TOKYO_AREA_DISADVANTAGED[pref] && TOKYO_AREA_DISADVANTAGED[pref].includes(muni))issues.push('移住元が東京圏の条件不利地域（別表第1の1）');
+      if(a['yn-1-1']==='no')issues.push('通算5年以上の23区在住・通勤要件を満たさない（別表第1の1(1)）');
+      if(a['yn-1-2']==='no')issues.push('連続1年以上の23区在住・通勤要件を満たさない（別表第1の1(2)）');
+      break;
+    }
+    case 'step2':
+      if(a['yn-2-2']==='no')issues.push('5年以上の継続居住意思なし（別表第1の2(3)）');
+      break;
+    case 'step3':
+      if(a['yn-3-1']==='no' || a['yn-3-2']==='no' || a['yn-3-3']==='no')issues.push('暴力団排除要件を満たさない（別表第1の3(1)〜(3)）');
+      if(a['q-residence']==='other-status')issues.push('対象外の在留資格（別表第1の3(4)）');
+      if(a['yn-3-5']==='no')issues.push('市税等の滞納あり（別表第1の3(5)）');
+      if(a['yn-3-6']==='no')issues.push('過去に移住支援金を受給済み（別表第1の3(6)）');
+      break;
+    case 'step6':
+      if(a['q-work-location']==='other')issues.push('勤務地が千葉県内の条件不利地域でない（別表第2の1(1)・2(1)）');
+      if(a['yn-6-week20h']==='no')issues.push('週20時間以上の無期雇用契約でない（別表第2の1(4)・2(2)）');
+      if(a['yn-6-5year']==='no')issues.push('5年以上の継続勤務意思なし（別表第2の1(6)・2(3)）');
+      if(a['yn-6-newhire']==='no')issues.push('転勤・出向等で新規雇用でない（別表第2の1(7)・2(4)）');
+      if(a['pro-program']==='no'){
+        if(a['yn-6A-3']==='no')issues.push('3親等以内の親族が経営する法人への就業（別表第2の1(3)）');
+        if(a['yn-6A-5']==='no')issues.push('応募日がマッチングサイト掲載日より前（別表第2の1(5)）');
+      } else if(a['pro-program']==='yes'){
+        if(a['yn-6B-5']==='no')issues.push('離職を前提とするプロジェクト参加（別表第2の2(5)）');
+      }
+      break;
+    case 'step7':
+      if(a['yn-7-1']==='no')issues.push('自己意思の移住・移住元業務の継続要件を満たさない（別表第3(1)）');
+      if(a['yn-7-2']==='no')issues.push('週20時間以上のテレワーク要件を満たさない（別表第3(2)）');
+      if(a['yn-7-3']==='no')issues.push('労働基準法第9条の労働者でない（別表第3(3)）');
+      if(a['yn-7-4']==='no')issues.push('指揮監督事業所が香取市内にある（別表第3(4)）');
+      if(a['yn-7-5']==='no')issues.push('地域未来交付金等から所属先経由で資金提供あり（別表第3(5)）');
+      break;
+    case 'step8': {
+      const ra = a['relation-a']||[];
+      const rb = a['relation-b']||[];
+      if(ra.length===0)issues.push('支給対象者要件のいずれにも該当しない（別表第4の1）');
+      if(ra.includes('A3') && a['q-relation-a3-location']==='other')issues.push('就業先が香取市・隣接自治体でない（別表第4の1(3)）');
+      if(rb.length===0)issues.push('地域の担い手確保要件のいずれにも該当しない（別表第4の2）');
+      break;
+    }
+    case 'step9':
+      if(a['yn-9-1']==='no')issues.push('1年以内の起業支援金交付決定なし（別表第5）');
+      break;
+  }
+  return issues;
+}
+
+function computeNextScreen(){
+  const c = state.current;
+  switch(c){
+    case 'welcome': return 'step0';
+    case 'step0': return 'step1';
+    case 'step1': return 'step2';
+    case 'step2': return 'step3';
+    case 'step3':
+      if(state.answers.household==='multiple')return 'step4';
+      if(state.answers['minor-addition']==='yes')return 'step5';
+      return getTypedStep();
+    case 'step4':
+      // STEP 4の4-1〜4-4のいずれかが「いいえ」の場合はSTEP 5（18歳未満加算）を省略
+      if(state.answers['yn-4-1']==='no' || state.answers['yn-4-2']==='no' || state.answers['yn-4-3']==='no' || state.answers['yn-4-4']==='no')return getTypedStep();
+      if(state.answers['minor-addition']==='yes')return 'step5';
+      return getTypedStep();
+    case 'step5': return getTypedStep();
+    case 'step6':
+    case 'step7':
+    case 'step8':
+    case 'step9':
+      return 'result';
+    default: return 'welcome';
+  }
+}
+
+function getTypedStep(){
+  const t = state.answers['app-type'];
+  switch(t){
+    case 'employment': return 'step6';
+    case 'telework': return 'step7';
+    case 'relation': return 'step8';
+    case 'entrepreneur': return 'step9';
+    default: return 'step6';
+  }
+}
+
+function updateProgress(screenId){
+  const order = ['welcome','step0','step1','step2','step3','step4','step5','step6','step7','step8','step9','result'];
+  const total = 10;
+  let stepNum = 0;
+  switch(screenId){
+    case 'welcome': stepNum=0; break;
+    case 'step0': stepNum=1; break;
+    case 'step1': stepNum=2; break;
+    case 'step2': stepNum=3; break;
+    case 'step3': stepNum=4; break;
+    case 'step4': stepNum=5; break;
+    case 'step5': stepNum=6; break;
+    case 'step6': case 'step7': case 'step8': case 'step9': stepNum=8; break;
+    case 'result': stepNum=10; break;
+  }
+  const pct = Math.round((stepNum/total)*100);
+  document.getElementById('progress-fill').style.width = pct+'%';
+  document.getElementById('progress-label').textContent = screenId==='welcome'?'スタート':(screenId==='result'?'判定完了':'STEP '+(stepNum-1)+' / 9');
+  document.getElementById('progress-percent').textContent = pct+'%';
+}
+
+// ========= 入力ハンドラ =========
+function setYN(btn){
+  const group = btn.parentElement;
+  group.querySelectorAll('.yn-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const target = group.dataset.target;
+  state.answers[target] = btn.dataset.value;
+  // 4-1「いいえ」選択時：4-2〜4-4を非表示にし、全て「いいえ」を強制設定
+  if(target==='yn-4-1'){
+    toggleStep4Subquestions();
+  }
+}
+
+// radio クリック視覚化
+document.addEventListener('change',(e)=>{
+  if(e.target.type==='radio'){
+    const group = e.target.closest('[data-target]');
+    if(group){
+      group.querySelectorAll('.radio-item').forEach(item=>item.classList.remove('selected'));
+      e.target.closest('.radio-item').classList.add('selected');
+      state.answers[group.dataset.target] = e.target.value;
+      // STEP 0 の動的更新
+      if(group.dataset.target==='pro-program'){
+        toggleProProgram();
+      }
+      // 0-3 単身選択時に 0-4 を非表示
+      if(group.dataset.target==='household'){
+        toggleMinorAdditionQuestion();
+      }
+    }
+  } else if(e.target.type==='checkbox'){
+    const group = e.target.closest('[data-target]');
+    if(group){
+      e.target.closest('.check-item').classList.toggle('selected', e.target.checked);
+      const target = group.dataset.target;
+      if(!Array.isArray(state.answers[target]))state.answers[target]=[];
+      if(e.target.checked){
+        if(!state.answers[target].includes(e.target.value))state.answers[target].push(e.target.value);
+      }else{
+        state.answers[target] = state.answers[target].filter(v=>v!==e.target.value);
+      }
+    }
+  } else if(e.target.tagName==='SELECT' || e.target.tagName==='INPUT'){
+    state.answers[e.target.id] = e.target.value;
+  }
+});
+
+// STEP 1：都道府県に応じた市区町村ドロップダウン
+function updateMunicipalityOptions(){
+  const pref = document.getElementById('q-origin-pref').value;
+  state.answers['q-origin-pref'] = pref;
+  const wardWrap = document.getElementById('q-ward-wrap');
+  const muniWrap = document.getElementById('q-muni-wrap');
+  const muniSel = document.getElementById('q-origin-muni');
+  const wardSel = document.getElementById('q-origin-ward');
+  // 隠す
+  wardWrap.classList.add('hidden');
+  muniWrap.classList.add('hidden');
+  document.getElementById('muni-warning').classList.add('hidden');
+  // 表示する後続質問
+  showOriginQuestions(pref);
+  // 1-3「通勤なし」の表示制御：23区在住者のみ選択可能
+  toggleCommuteNoneOption(pref);
+  if(pref==='tokyo23'){
+    wardWrap.classList.remove('hidden');
+    wardSel.innerHTML = '<option value="">-- 選択してください --</option>' + TOKYO_23WARDS.map(w=>`<option value="${w}">${w}</option>`).join('');
+  } else if(pref==='tokyo' || pref==='saitama' || pref==='kanagawa'){
+    muniWrap.classList.remove('hidden');
+    muniSel.innerHTML = '<option value="">-- 市区町村を選択 --</option>' +
+      '<option value="other-eligible">下記以外の市区町村（対象地域）</option>' +
+      '<optgroup label="条件不利地域（移住元として対象外）">' +
+      TOKYO_AREA_DISADVANTAGED[pref].map(m=>`<option value="${m}">${m}</option>`).join('') +
+      '</optgroup>';
+  } else if(pref==='chiba'){
+    muniWrap.classList.remove('hidden');
+    muniSel.innerHTML = '<option value="">-- 市区町村を選択 --</option>' +
+      '<optgroup label="千葉県の市町村">' +
+      CHIBA_MUNICIPALITIES.map(m=>`<option value="${m}">${m}</option>`).join('') +
+      '</optgroup>';
+  } else if(pref==='other'){
+    document.getElementById('muni-warning').textContent='東京圏（埼玉・千葉・東京都・神奈川）以外からの移住は、移住支援金の対象外です。';
+    document.getElementById('muni-warning').classList.remove('hidden');
+  }
+}
+
+function checkDisadvantagedArea(){
+  const pref = document.getElementById('q-origin-pref').value;
+  const muni = document.getElementById('q-origin-muni').value;
+  state.answers['q-origin-muni'] = muni;
+  const w = document.getElementById('muni-warning');
+  w.classList.add('hidden');
+  if(pref==='chiba' && CHIBA_DISADVANTAGED.includes(muni)){
+    w.textContent='⚠ ' + muni + ' は千葉県の条件不利地域です。移住元としての対象は「東京圏（条件不利地域を除く）」に限られるため、対象外となる可能性があります。';
+    w.classList.remove('hidden');
+  } else if(pref!=='chiba' && TOKYO_AREA_DISADVANTAGED[pref] && TOKYO_AREA_DISADVANTAGED[pref].includes(muni)){
+    w.textContent='⚠ ' + muni + ' は東京圏の条件不利地域に該当するため、移住元として対象外となります。';
+    w.classList.remove('hidden');
+  }
+}
+
+function showOriginQuestions(pref){
+  const wraps = ['q-1-1-wrap','q-1-2-wrap','q-1-3-wrap','q-1-4-wrap'];
+  if(pref && pref!=='other'){
+    wraps.forEach(id=>document.getElementById(id).classList.remove('hidden'));
+  } else {
+    wraps.forEach(id=>document.getElementById(id).classList.add('hidden'));
+  }
+}
+
+// STEP 6：専門人材/一般 切替
+function toggleProProgram(){
+  const v = state.answers['pro-program'];
+  const a = document.getElementById('step6a-extra');
+  const b = document.getElementById('step6b-extra');
+  if(v==='no'){
+    a.classList.remove('hidden');
+    b.classList.add('hidden');
+    document.getElementById('q-6-x4').textContent='6A-4';
+    document.getElementById('q-6-x6').textContent='6A-6';
+    document.getElementById('q-6-x7').textContent='6A-7';
+  } else if(v==='yes'){
+    a.classList.add('hidden');
+    b.classList.remove('hidden');
+    document.getElementById('q-6-x4').textContent='6B-2';
+    document.getElementById('q-6-x6').textContent='6B-3';
+    document.getElementById('q-6-x7').textContent='6B-4';
+  }
+}
+
+// 勤務地の条件不利地域チェック
+document.addEventListener('change',(e)=>{
+  if(e.target.id==='q-work-location'){
+    const w = document.getElementById('work-location-warning');
+    w.classList.toggle('hidden', e.target.value!=='other');
+  }
+});
+
+function toggleRelationA3(){
+  const a3 = document.querySelector('input[name="relation-a"][value="A3"]');
+  document.getElementById('q-a3-location-wrap').classList.toggle('hidden', !a3.checked);
+}
+
+document.addEventListener('change',(e)=>{
+  if(e.target.id==='q-relation-a3-location'){
+    const w = document.getElementById('a3-location-warning');
+    w.classList.toggle('hidden', e.target.value!=='other' && e.target.value!=='');
+  }
+});
+
+// ========= バリデーション =========
+function validateCurrentScreen(){
+  const c = state.current;
+  let ok = true;
+  let msg = '';
+  switch(c){
+    case 'step0':
+      if(!state.answers.household){msg='申請金額タイプを選択してください';ok=false;}
+      else if(state.answers.household==='multiple' && !state.answers['minor-addition']){msg='18歳未満加算の希望を選択してください';ok=false;}
+      else if(!state.answers['minor-addition']){msg='18歳未満加算の希望を選択してください';ok=false;}
+      else if(!state.answers['app-type']){msg='申請タイプを選択してください';ok=false;}
+      break;
+    case 'step1':
+      if(!state.answers['q-origin-pref']){msg='転入前の都道府県を選択してください';ok=false;}
+      else if(state.answers['q-origin-pref']==='other'){msg='東京圏以外からの移住は対象外です。前画面で別の選択肢をご検討ください。';ok=false;}
+      else if(state.answers['q-origin-pref']!=='tokyo23' && !state.answers['q-origin-muni']){msg='市区町村を選択してください';ok=false;}
+      else if(!state.answers['yn-1-1']){msg='1-1の回答を選択してください';ok=false;}
+      else if(!state.answers['yn-1-2']){msg='1-2の回答を選択してください';ok=false;}
+      else if(!state.answers['commute-type']){msg='通勤形態を選択してください';ok=false;}
+      break;
+    case 'step2':
+      if(!state.answers['yn-2-2']){msg='2-2を選択してください';ok=false;}
+      break;
+    case 'step3':
+      const need=['yn-3-1','yn-3-2','yn-3-3','yn-3-5','yn-3-6','yn-3-7'];
+      for(const k of need){if(!state.answers[k]){msg='STEP 3 のすべての質問にお答えください';ok=false;break;}}
+      if(ok && !state.answers['q-residence']){msg='在留資格を選択してください';ok=false;}
+      break;
+    case 'step4':
+      const need4=['yn-4-1','yn-4-2','yn-4-3','yn-4-4'];
+      for(const k of need4){if(!state.answers[k]){msg='STEP 4 のすべての質問にお答えください';ok=false;break;}}
+      break;
+    case 'step5':
+      if(!state.answers['minor-count']){msg='帯同する18歳未満の人数を選択してください';ok=false;}
+      else{
+        const need5=['yn-5-1','yn-5-2','yn-5-3'];
+        for(const k of need5){if(!state.answers[k]){msg='STEP 5 のすべての質問にお答えください';ok=false;break;}}
+      }
+      break;
+    case 'step6':
+      if(!state.answers['pro-program']){msg='プロフェッショナル人材事業の利用有無を選択してください';ok=false;}
+      else if(!state.answers['q-work-location']){msg='勤務地を選択してください';ok=false;}
+      else if(!state.answers['yn-6-week20h'] || !state.answers['yn-6-5year'] || !state.answers['yn-6-newhire']){msg='すべての質問にお答えください';ok=false;}
+      else if(state.answers['pro-program']==='no'){
+        if(!state.answers['yn-6A-2'] || !state.answers['yn-6A-3'] || !state.answers['yn-6A-5']){msg='6A の質問にお答えください';ok=false;}
+      } else {
+        if(!state.answers['yn-6B-5']){msg='6B-5 にお答えください';ok=false;}
+      }
+      break;
+    case 'step7':
+      const need7=['yn-7-1','yn-7-2','yn-7-3','yn-7-4','yn-7-5'];
+      for(const k of need7){if(!state.answers[k]){msg='STEP 7 のすべての質問にお答えください';ok=false;break;}}
+      break;
+    case 'step8':
+      const ra = state.answers['relation-a']||[];
+      const rb = state.answers['relation-b']||[];
+      if(ra.length===0){msg='8-A から1つ以上選択してください';ok=false;}
+      else if(ra.includes('A3') && (!state.answers['q-relation-a3-location'])){msg='就業先を選択してください';ok=false;}
+      else if(rb.length===0){msg='8-B から1つ以上選択してください';ok=false;}
+      break;
+    case 'step9':
+      if(!state.answers['yn-9-1']){msg='9-1 にお答えください';ok=false;}
+      break;
+  }
+  if(!ok){alert(msg);}
+  return ok;
+}
+
+// ========= 判定ロジック =========
+function evaluate(){
+  const a = state.answers;
+  const issues = [];      // 失格事由
+  const warnings = [];    // 条件付き
+
+  // STEP 1：移住元
+  const pref = a['q-origin-pref'];
+  const muni = a['q-origin-muni'];
+  if(pref==='other')issues.push('移住元が東京圏外（別表第1の1）');
+  if(pref==='chiba' && CHIBA_DISADVANTAGED.includes(muni))issues.push('移住元が千葉県の条件不利地域（別表第1の1）');
+  if(pref && pref!=='chiba' && TOKYO_AREA_DISADVANTAGED[pref] && TOKYO_AREA_DISADVANTAGED[pref].includes(muni))issues.push('移住元が東京圏の条件不利地域（別表第1の1）');
+  if(a['yn-1-1']==='no')issues.push('通算5年以上の23区在住・通勤要件を満たさない（別表第1の1(1)）');
+  if(a['yn-1-2']==='no')issues.push('連続1年以上の23区在住・通勤要件を満たさない（別表第1の1(2)）');
+  //if(a['commute-type']==='owner')warnings.push('法人経営者・個人事業主の場合、開業届・納税証明書による別途証明が必要');
+
+  // STEP 2：移住先（転入日から自動判定）
+  // ※「転入後1年超過」はSTEP 0の時点でforcedIssues判定済のため、ここに到達した時点で1年以内
+  const transferStatus = deriveTransferStatus(a['q-transfer-date']);
+  //if(transferStatus==='recent') warnings.push('「市に対する補助金交付決定後の転入」要件（別表第1の2(1)）に該当するかは窓口確認が必要');
+  if(a['yn-2-2']==='no')issues.push('5年以上の継続居住意思なし（別表第1の2(3)）');
+
+  // STEP 3：その他
+  if(a['yn-3-1']==='no' || a['yn-3-2']==='no' || a['yn-3-3']==='no')issues.push('暴力団排除要件を満たさない（別表第1の3(1)〜(3)）');
+  if(a['q-residence']==='other-status')issues.push('対象外の在留資格（別表第1の3(4)）');
+  if(!a['q-residence'])issues.push('在留資格が未確認（別表第1の3(4)）');
+  if(a['yn-3-5']==='no')issues.push('市税等の滞納あり（別表第1の3(5)）');
+  if(a['yn-3-6']==='no')issues.push('過去に移住支援金を受給済み（別表第1の3(6)）');
+  if(a['yn-3-7']==='no')warnings.push('自治会加入への努力意思なし（別表第1の3(7)、R8新設）');
+
+  // STEP 4：世帯
+  if(a.household==='multiple'){
+    if(a['yn-4-1']==='no' || a['yn-4-2']==='no' || a['yn-4-3']==='no' || a['yn-4-4']==='no'){
+      warnings.push('世帯要件を満たさないため、単身（60万円）での申請に切替（別表第1の4）');
+    }
+  }
+
+  // STEP 5：加算
+  let minorBonus = 0;
+  if(a['minor-addition']==='yes'){
+    if(a['yn-5-1']==='yes' && a['yn-5-2']==='yes' && a['yn-5-3']==='yes'){
+      minorBonus = a['minor-count']==='2' ? 200 : 100;
+    } else {
+      warnings.push('18歳未満加算要件を満たさないため、加算なし（別表第1の5）');
+    }
+  }
+
+  // STEP 6/7/8/9
+  const t = a['app-type'];
+  if(t==='employment'){
+    if(a['q-work-location']==='other' || !a['q-work-location'])issues.push('勤務地が千葉県内の条件不利地域でない（別表第2の1(1)・2(1)）');
+    if(a['yn-6-week20h']==='no')issues.push('週20時間以上の無期雇用契約でない（別表第2の1(4)・2(2)）');
+    if(a['yn-6-5year']==='no')issues.push('5年以上の継続勤務意思なし（別表第2の1(6)・2(3)）');
+    if(a['yn-6-newhire']==='no')issues.push('転勤・出向等で新規雇用でない（別表第2の1(7)・2(4)）');
+    if(a['pro-program']==='no'){
+      if(a['yn-6A-2']==='no')warnings.push('マッチングサイトへの掲載求人でない可能性（別表第2の1(2)）');
+      if(a['yn-6A-3']==='no')issues.push('3親等以内の親族が経営する法人への就業（別表第2の1(3)）');
+      if(a['yn-6A-5']==='no')issues.push('応募日がマッチングサイト掲載日より前（別表第2の1(5)）');
+    } else if(a['pro-program']==='yes'){
+      if(a['yn-6B-5']==='no')issues.push('離職を前提とするプロジェクト参加（別表第2の2(5)）');
+    }
+  } else if(t==='telework'){
+    if(a['yn-7-1']==='no')issues.push('自己意思の移住・移住元業務の継続要件を満たさない（別表第3(1)）');
+    if(a['yn-7-2']==='no')issues.push('週20時間以上のテレワーク要件を満たさない（別表第3(2)）');
+    if(a['yn-7-3']==='no')issues.push('労働基準法第9条の労働者でない（別表第3(3)）');
+    if(a['yn-7-4']==='no')issues.push('指揮監督事業所が香取市内にある（別表第3(4)）');
+    if(a['yn-7-5']==='no')issues.push('地域未来交付金等から所属先経由で資金提供あり（別表第3(5)）');
+  } else if(t==='relation'){
+    const ra = a['relation-a']||[];
+    const rb = a['relation-b']||[];
+    if(ra.length===0)issues.push('支給対象者要件のいずれにも該当しない（別表第4の1）');
+    if(ra.includes('A3') && a['q-relation-a3-location']==='other')issues.push('就業先が香取市・隣接自治体でない（別表第4の1(3)）');
+    if(rb.length===0)issues.push('地域の担い手確保要件のいずれにも該当しない（別表第4の2）');
+  } else if(t==='entrepreneur'){
+    if(a['yn-9-1']==='no')issues.push('1年以内の起業支援金交付決定なし（別表第5）');
+  }
+
+  return {issues, warnings, minorBonus};
+}
+
+// ========= 結果表示 =========
+function renderResult(){
+  // 対象外の選択で早期通知された場合は、その事由のみを表示する
+  const r = state.forcedIssues ? {issues: state.forcedIssues, warnings: [], minorBonus: 0} : evaluate();
+  const a = state.answers;
+  let html = '';
+  if(state.forcedIssues){
+    html += '<div class="alert alert-info" style="margin-bottom:16px">対象とならない選択があったため、この時点で判定結果を表示しています。残りの設問は省略されています。</div>';
+  }
+
+  // 基本金額
+  let amount = 0;
+  let breakdown = '';
+  if(r.issues.length===0){
+    const isMultiple = a.household==='multiple' && (!a['yn-4-1'] || (a['yn-4-1']==='yes' && a['yn-4-2']==='yes' && a['yn-4-3']==='yes' && a['yn-4-4']==='yes'));
+    amount = isMultiple ? 100 : 60;
+    breakdown = '基本：' + amount + '万円（' + (isMultiple?'2人以上の世帯':'単身世帯') + '）';
+    if(r.minorBonus>0){
+      amount += r.minorBonus;
+      breakdown += ' ＋ 18歳未満加算：' + r.minorBonus + '万円';
+    }
+  }
+
+  if(r.issues.length===0 && r.warnings.length===0){
+    html += '<div class="result-icon">🎉</div>';
+    html += '<h2 class="result-title ok">該当の可能性が高いです</h2>';
+    html += '<p class="result-subtitle">交付要綱の主要要件を満たしている可能性があります。</p>';
+    html += '<div class="result-amount"><div class="label">想定支給額</div><div class="value">' + amount + ' 万円</div><div class="breakdown">' + breakdown + '</div></div>';
+  } else if(r.issues.length===0){
+    html += '<div class="result-icon">⚠️</div>';
+    html += '<h2 class="result-title warn">条件付きで該当の可能性があります</h2>';
+    html += '<p class="result-subtitle">主要要件は満たしていますが、市の個別判断・特例が関係する項目があります。</p>';
+    html += '<div class="result-amount"><div class="label">想定支給額（要相談）</div><div class="value">' + amount + ' 万円</div><div class="breakdown">' + breakdown + '</div></div>';
+    html += '<div class="alert alert-warn"><strong>確認が必要な項目：</strong><ul style="margin:8px 0 0;padding-left:20px">' + r.warnings.map(w=>'<li>'+w+'</li>').join('') + '</ul></div>';
+  } else {
+    html += '<div class="result-icon">❌</div>';
+    html += '<h2 class="result-title ng">対象外の可能性があります</h2>';
+    html += '<p class="result-subtitle">以下の要件を満たさないため、現状では対象外となる可能性が高いです。</p>';
+    html += '<div class="ng-reasons"><h4>非該当となる主な事由</h4><ul>' + r.issues.map(i=>'<li>'+i+'</li>').join('') + '</ul></div>';
+    if(r.warnings.length>0){
+      html += '<div class="alert alert-warn"><strong>その他の留意事項：</strong><ul style="margin:8px 0 0;padding-left:20px">' + r.warnings.map(w=>'<li>'+w+'</li>').join('') + '</ul></div>';
+    }
+  }
+
+  // 必要書類リスト（該当の場合のみ）
+  if(r.issues.length===0){
+    html += '<div class="doc-list"><h4>📋 必要書類の目安（別表第6）</h4><ul>';
+    html += '<li><strong>全申請者共通：</strong>交付申請書（別記第1号様式）／本人確認書類／香取市の住民票の写し／移住元の住民票除票の写し／市税等に滞納がないことを証する書類／誓約書（別記第2号様式）／交付請求書（別記第7号様式）</li>';
+    if(a['commute-type']==='employee')html += '<li><strong>23区通勤者：</strong>東京23区で就業していた法人・企業等の就業証明書／雇用保険の被保険者であったことを確認できる書類</li>';
+    if(a['commute-type']==='owner')html += '<li><strong>法人経営者・個人事業主：</strong>履歴事項全部証明書、開業届の写し等／個人事業等の納税証明書</li>';
+    if(a['yn-1-4']==='yes')html += '<li><strong>大学通学特例：</strong>卒業証明書等／就業証明書／雇用保険の被保険者であったことを確認できる書類</li>';
+    if(a.household==='multiple')html += '<li><strong>2人以上の世帯：</strong>世帯全員の香取市の住民票の写し／世帯全員の移住元住民票除票の写し／世帯全員の市税等に滞納がないことを証する書類</li>';
+    if(a['app-type']==='employment')html += '<li><strong>就職類型：</strong>就業先法人・企業等の就業証明書（別記第3号様式の1）</li>';
+    if(a['app-type']==='telework')html += '<li><strong>テレワーク類型：</strong>所属先法人・企業等の就業証明書（別記第3号様式の2）</li>';
+    if(a['app-type']==='relation')html += '<li><strong>関係人口類型：</strong>別表第4の要件を満たすことを証する書類</li>';
+    if(a['app-type']==='entrepreneur')html += '<li><strong>起業類型：</strong>起業支援金の交付決定通知書</li>';
+    html += '</ul></div>';
+    html += '<div class="alert alert-info"><strong>申請期限：</strong> 申請する年度の<strong>2月末日</strong>まで。予算の範囲内での支給となるため、香取市移住・定住推進担当窓口に早めにご相談ください。</div>';
+    html += '<div class="alert alert-warn" style="font-size:13px"><strong>取消事由の確認：</strong>申請日から3年未満の転出、1年以内に移住支援金の要件を満たす職を辞したとき等は全額返還、3年以上5年以内の転出は半額返還の対象となります（要綱 第11条）。</div>';
+  }
+
+  // 診断項目を網羅した詳細（印刷用に簡潔な表形式で出力）
+  html += buildDiagnosisDetail(a, r);
+
+  document.getElementById('result-content').innerHTML = html;
+}
+
+// 診断項目を網羅した、簡潔な表形式の詳細を生成
+function buildDiagnosisDetail(a, r){
+  const yn = v => v==='yes'?'はい':(v==='no'?'いいえ':'—');
+  const pMap = {tokyo23:'東京23区内',tokyo:'東京都（23区外）',saitama:'埼玉県',chiba:'千葉県',kanagawa:'神奈川県',other:'その他の道府県'};
+  const cMap = {employee:'会社員（雇用保険被保険者）',owner:'法人経営者・個人事業主',none:'通勤なし（23区内在住のみ）'};
+  const tMap = {employment:'就職',telework:'テレワーク',relation:'関係人口',entrepreneur:'起業'};
+  const resMap = {japanese:'日本国籍',permanent:'永住者','spouse-japanese':'日本人の配偶者等','spouse-permanent':'永住者の配偶者等',settler:'定住者','special-permanent':'特別永住者','other-status':'対象外の在留資格'};
+  const proMap = {yes:'専門人材枠（プロ人材事業を利用）',no:'一般就職枠（利用なし）'};
+  const sections = [];
+  const has = v => v!==undefined && v!==null && v!=='';
+
+  // 基本情報
+  let rows0 = [];
+  if(has(a['q-name']))rows0.push(['お名前', escapeHtml(a['q-name'])]);
+  if(has(a['q-transfer-date']))rows0.push(['香取市への転入日', a['q-transfer-date']]);
+  rows0.push(['申請区分', a.household==='multiple'?'2人以上の世帯（100万円）':'単身（60万円）']);
+  rows0.push(['18歳未満加算', a['minor-addition']==='yes'?('希望（'+(a['minor-count']==='2'?'2人以上':'1人')+'）'):'希望しない']);
+  rows0.push(['申請タイプ', tMap[a['app-type']]||'—']);
+  sections.push(['基本情報（STEP 0）', rows0]);
+
+  // STEP 1 移住元
+  if(has(a['q-origin-pref'])){
+    let r1 = [];
+    r1.push(['移住元の都道府県', (pMap[a['q-origin-pref']]||'')+(has(a['q-origin-ward'])?'／'+a['q-origin-ward']:'')+(has(a['q-origin-muni'])?'／'+a['q-origin-muni']:'')]);
+    if(has(a['yn-1-1']))r1.push(['通算5年以上の23区在住・通勤', yn(a['yn-1-1'])]);
+    if(has(a['yn-1-2']))r1.push(['連続1年以上の23区在住・通勤', yn(a['yn-1-2'])]);
+    if(has(a['commute-type']))r1.push(['通勤の雇用形態', cMap[a['commute-type']]||'—']);
+    if(has(a['yn-1-4']))r1.push(['大学通学の特例', a['yn-1-4']==='yes'?'該当する':'該当しない']);
+    sections.push(['移住元（STEP 1）', r1]);
+  }
+
+  // STEP 2 移住先
+  {
+    let r2 = [];
+    const ts = deriveTransferStatus(a['q-transfer-date']);
+    if(ts==='recent') r2.push(['転入状況（2-1）', '転入済　※STEP 0の転入日（' + a['q-transfer-date'] + '）から自動判定']);
+    else if(ts==='planned') r2.push(['転入状況（2-1）', '転入予定　※STEP 0の転入日（' + a['q-transfer-date'] + '）から自動判定']);
+    if(has(a['yn-2-2'])) r2.push(['5年以上の継続居住意思（2-2）', yn(a['yn-2-2'])]);
+    if(r2.length>0) sections.push(['移住先（STEP 2）', r2]);
+  }
+
+  // STEP 3 その他
+  if(has(a['yn-3-1'])||has(a['q-residence'])){
+    let r3 = [];
+    if(has(a['yn-3-1']))r3.push(['暴力団員でない', yn(a['yn-3-1'])]);
+    if(has(a['yn-3-2']))r3.push(['暴力団等の利用なし', yn(a['yn-3-2'])]);
+    if(has(a['yn-3-3']))r3.push(['暴力団等と非難される関係なし', yn(a['yn-3-3'])]);
+    if(has(a['q-residence']))r3.push(['国籍・在留資格', resMap[a['q-residence']]||'—']);
+    if(has(a['yn-3-5']))r3.push(['市税等の滞納なし', yn(a['yn-3-5'])]);
+    if(has(a['yn-3-6']))r3.push(['過去の受給歴なし', yn(a['yn-3-6'])]);
+    if(has(a['yn-3-7']))r3.push(['自治会加入の努力意思', yn(a['yn-3-7'])]);
+    sections.push(['その他の条件（STEP 3）', r3]);
+  }
+
+  // STEP 4 世帯
+  if(a.household==='multiple' && (has(a['yn-4-1'])||has(a['yn-4-2']))){
+    let r4 = [];
+    if(has(a['yn-4-1']))r4.push(['転入前に2人以上が同一世帯', yn(a['yn-4-1'])]);
+    if(has(a['yn-4-2']))r4.push(['現在も同一世帯', yn(a['yn-4-2'])]);
+    if(has(a['yn-4-3']))r4.push(['世帯員全員が転入1年以内', yn(a['yn-4-3'])]);
+    if(has(a['yn-4-4']))r4.push(['世帯員全員がSTEP3要件に該当', yn(a['yn-4-4'])]);
+    sections.push(['2人以上の世帯（STEP 4）', r4]);
+  }
+
+  // STEP 5 加算
+  if(a['minor-addition']==='yes' && (has(a['minor-count'])||has(a['yn-5-1']))){
+    let r5 = [];
+    if(has(a['minor-count']))r5.push(['帯同する18歳未満の人数', a['minor-count']==='2'?'2人以上':'1人']);
+    if(has(a['yn-5-1']))r5.push(['4月1日時点で18歳未満', yn(a['yn-5-1'])]);
+    if(has(a['yn-5-2']))r5.push(['申請者本人ではない', yn(a['yn-5-2'])]);
+    if(has(a['yn-5-3']))r5.push(['申請者の配偶者ではない', yn(a['yn-5-3'])]);
+    sections.push(['18歳未満加算（STEP 5）', r5]);
+  }
+
+  // STEP 6 就職
+  if(a['app-type']==='employment' && (has(a['pro-program'])||has(a['q-work-location']))){
+    let r6 = [];
+    if(has(a['pro-program']))r6.push(['就職枠の区分', proMap[a['pro-program']]||'—']);
+    if(has(a['q-work-location']))r6.push(['勤務地', a['q-work-location']==='other'?'条件不利地域外':a['q-work-location']]);
+    if(has(a['yn-6A-2']))r6.push(['しごとNAVI掲載求人', yn(a['yn-6A-2'])]);
+    if(has(a['yn-6A-3']))r6.push(['3親等以内の親族経営でない', yn(a['yn-6A-3'])]);
+    if(has(a['yn-6A-5']))r6.push(['応募日が掲載日以降', yn(a['yn-6A-5'])]);
+    if(has(a['yn-6-week20h']))r6.push(['週20時間以上の無期雇用契約', yn(a['yn-6-week20h'])]);
+    if(has(a['yn-6-5year']))r6.push(['5年以上の継続勤務意思', yn(a['yn-6-5year'])]);
+    if(has(a['yn-6-newhire']))r6.push(['新規の雇用（異動等でない）', yn(a['yn-6-newhire'])]);
+    if(has(a['yn-6B-5']))r6.push(['離職前提でない', yn(a['yn-6B-5'])]);
+    sections.push(['就職（STEP 6）', r6]);
+  }
+
+  // STEP 7 テレワーク
+  if(a['app-type']==='telework' && has(a['yn-7-1'])){
+    let r7 = [];
+    r7.push(['自己意思での移住・業務継続', yn(a['yn-7-1'])]);
+    r7.push(['週20時間以上のテレワーク', yn(a['yn-7-2'])]);
+    r7.push(['労働基準法第9条の労働者', yn(a['yn-7-3'])]);
+    r7.push(['指揮監督事業所が市外', yn(a['yn-7-4'])]);
+    r7.push(['地域未来交付金等の資金提供なし', yn(a['yn-7-5'])]);
+    sections.push(['テレワーク（STEP 7）', r7]);
+  }
+
+  // STEP 8 関係人口
+  if(a['app-type']==='relation'){
+    const ra = a['relation-a']||[], rb = a['relation-b']||[];
+    const raMap = {A1:'日帰りイベント3回以上参加',A2:'宿泊イベント参加',A3:'香取市・隣接自治体で就業',A4:'地域づくり活動に継続参加',A5:'香取市に居住経験あり'};
+    const rbMap = {B1:'農林水産業その他の事業に従事',B2:'地域づくり活動に恒常的参加・継続意向'};
+    let r8 = [];
+    r8.push(['支給対象者要件（8-A）', ra.length?ra.map(v=>raMap[v]||v).join('、'):'該当なし']);
+    if(ra.includes('A3'))r8.push(['8A-3 就業先', a['q-relation-a3-location']==='other'?'対象外の自治体':(a['q-relation-a3-location']||'—')]);
+    r8.push(['地域の担い手要件（8-B）', rb.length?rb.map(v=>rbMap[v]||v).join('、'):'該当なし']);
+    sections.push(['関係人口（STEP 8）', r8]);
+  }
+
+  // STEP 9 起業
+  if(a['app-type']==='entrepreneur' && has(a['yn-9-1'])){
+    sections.push(['起業（STEP 9）', [['1年以内の起業支援金交付決定', yn(a['yn-9-1'])]]]);
+  }
+
+  // HTML 構築
+  let h = '<hr><h3 class="diag-h">診断項目の詳細</h3>';
+  h += '<table class="diag-table">';
+  sections.forEach(([title, rows])=>{
+    if(!rows.length)return;
+    h += '<tr class="diag-sec"><th colspan="2">'+title+'</th></tr>';
+    rows.forEach(([k,v])=>{ h += '<tr><td class="diag-k">'+k+'</td><td class="diag-v">'+v+'</td></tr>'; });
+  });
+  h += '</table>';
+  h += '<p class="diag-foot small text-muted">本診断は参考用です。最終的な交付の判断は香取市が要綱に基づいて行います。</p>';
+  return h;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function restartForm(){
+  state.history = ['welcome'];
+  state.answers = {};
+  state.forcedIssues = null;
+  document.querySelectorAll('input[type="text"],input[type="date"]').forEach(i=>i.value='');
+  document.querySelectorAll('input[type="radio"],input[type="checkbox"]').forEach(i=>i.checked=false);
+  document.querySelectorAll('select').forEach(s=>s.selectedIndex=0);
+  document.querySelectorAll('.yn-btn.selected,.radio-item.selected,.check-item.selected').forEach(e=>e.classList.remove('selected'));
+  document.querySelectorAll('.alert.hidden')[0]; // no-op
+  document.getElementById('q-ward-wrap').classList.add('hidden');
+  document.getElementById('q-muni-wrap').classList.add('hidden');
+  document.getElementById('q-a3-location-wrap').classList.add('hidden');
+  document.getElementById('step6a-extra').classList.add('hidden');
+  document.getElementById('step6b-extra').classList.add('hidden');
+  ['q-1-1-wrap','q-1-2-wrap','q-1-3-wrap','q-1-4-wrap'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  // 0-4 と 通勤なしを初期状態（表示）に戻す
+  document.getElementById('q-0-4-wrap').classList.remove('hidden');
+  document.getElementById('commute-type-none-wrap').classList.remove('hidden');
+  // STEP 4の4-2〜4-4ラッパーは表示・補足通知は非表示に戻す
+  const s4wrap = document.getElementById('q-4-2-to-4-4-wrap');
+  if(s4wrap)s4wrap.classList.remove('hidden');
+  const s4notice = document.getElementById('q-4-1-no-notice');
+  if(s4notice)s4notice.classList.add('hidden');
+  // 転入日警告をクリア
+  const dw = document.getElementById('date-warning');
+  if(dw)dw.classList.add('hidden');
+  document.getElementById('progress-wrap').style.display='none';
+  goTo('welcome');
+}
+
+// ===== 0-3 → 0-4 連動：単身選択時に18歳未満加算質問を非表示にし、'no'を強制設定 =====
+function toggleMinorAdditionQuestion(){
+  const v = state.answers['household'];
+  const wrap = document.getElementById('q-0-4-wrap');
+  if(v==='single'){
+    wrap.classList.add('hidden');
+    // 視覚的なチェック・選択状態をクリアした上で 'no' を強制設定
+    document.querySelectorAll('input[name="minor-addition"]').forEach(i=>i.checked=false);
+    document.querySelectorAll('[data-target="minor-addition"] .radio-item').forEach(r=>r.classList.remove('selected'));
+    state.answers['minor-addition'] = 'no';
+  } else {
+    wrap.classList.remove('hidden');
+    // 単身→世帯に切替時、'no'の自動設定を解除（ユーザに再選択を促す）
+    if(state.answers['minor-addition']==='no'){
+      const noRadio = document.querySelector('input[name="minor-addition"][value="no"]');
+      if(noRadio && !noRadio.checked){
+        state.answers['minor-addition'] = '';
+      }
+    }
+  }
+}
+
+// ===== 1-1 origin → 1-3 連動：23区在住以外の場合は「通勤なし」を非表示 =====
+function toggleCommuteNoneOption(pref){
+  const noneWrap = document.getElementById('commute-type-none-wrap');
+  if(!noneWrap)return;
+  if(pref==='tokyo23'){
+    noneWrap.classList.remove('hidden');
+  } else {
+    noneWrap.classList.add('hidden');
+    // 既に「通勤なし」が選択されていた場合はクリア
+    if(state.answers['commute-type']==='none'){
+      state.answers['commute-type'] = '';
+      const noneRadio = document.querySelector('input[name="commute-type"][value="none"]');
+      if(noneRadio)noneRadio.checked = false;
+      document.querySelectorAll('[data-target="commute-type"] .radio-item').forEach(r=>{
+        const inp = r.querySelector('input[value="none"]');
+        if(inp)r.classList.remove('selected');
+      });
+    }
+  }
+}
+
+// ===== 4-1 連動：「いいえ」選択時に4-2〜4-4を非表示にし、すべて「いいえ」を強制設定 =====
+function toggleStep4Subquestions(){
+  const v = state.answers['yn-4-1'];
+  const wrap = document.getElementById('q-4-2-to-4-4-wrap');
+  const notice = document.getElementById('q-4-1-no-notice');
+  if(!wrap)return;
+  if(v==='no'){
+    // 4-2〜4-4を非表示にし、補足通知を表示
+    wrap.classList.add('hidden');
+    if(notice)notice.classList.remove('hidden');
+    // 4-2〜4-4を全て「いいえ」として強制設定
+    ['yn-4-2','yn-4-3','yn-4-4'].forEach(function(k){
+      state.answers[k] = 'no';
+      // 既に押されているボタンの視覚状態をクリア（再表示時に整合性を保つため）
+      const group = document.querySelector('[data-target="'+k+'"]');
+      if(group){
+        group.querySelectorAll('.yn-btn').forEach(function(b){
+          b.classList.remove('selected');
+        });
+      }
+    });
+  } else {
+    // 4-1=はい → 4-2〜4-4を表示、補足通知を非表示
+    wrap.classList.remove('hidden');
+    if(notice)notice.classList.add('hidden');
+    // 4-1がyesに切り替わった場合、4-2〜4-4の強制「いいえ」状態を解除して再回答を促す
+    ['yn-4-2','yn-4-3','yn-4-4'].forEach(function(k){
+      // 視覚的に選択中のものがなければ、state上も空にしてユーザに再入力を促す
+      const group = document.querySelector('[data-target="'+k+'"]');
+      if(group){
+        const anySelected = group.querySelector('.yn-btn.selected');
+        if(!anySelected){
+          state.answers[k] = '';
+        }
+      }
+    });
+  }
+}
+
+// ===== STEP 4 進入時：4-1の回答状態に応じて4-2〜4-4の表示を同期 =====
+function enterStep4(){
+  const wrap = document.getElementById('q-4-2-to-4-4-wrap');
+  const notice = document.getElementById('q-4-1-no-notice');
+  if(!wrap)return;
+  if(state.answers['yn-4-1']==='no'){
+    wrap.classList.add('hidden');
+    if(notice)notice.classList.remove('hidden');
+  } else {
+    wrap.classList.remove('hidden');
+    if(notice)notice.classList.add('hidden');
+  }
+}
+
+// ===== 0-2 転入日：年(4桁)→月(2桁)→日(2桁)の自動遷移＋カレンダー連動 =====
+function setupDateAutoAdvance(){
+  const y = document.getElementById('q-transfer-year');
+  const m = document.getElementById('q-transfer-month');
+  const d = document.getElementById('q-transfer-day');
+  const picker = document.getElementById('q-transfer-picker');
+  if(!y||!m||!d)return;
+
+  function sync(){
+    const yv = y.value.replace(/\D/g,'');
+    const mv = m.value.replace(/\D/g,'');
+    const dv = d.value.replace(/\D/g,'');
+    if(yv.length===4 && mv.length>=1 && dv.length>=1){
+      const iso = yv + '-' + mv.padStart(2,'0') + '-' + dv.padStart(2,'0');
+      state.answers['q-transfer-date'] = iso;
+      // 3入力 → カレンダーへ同期
+      if(picker && picker.value !== iso){
+        try { picker.value = iso; } catch(e) {}
+      }
+    } else {
+      state.answers['q-transfer-date'] = '';
+      if(picker) picker.value = '';
+    }
+    checkTransferDate();
+  }
+
+  y.addEventListener('input',function(e){
+    e.target.value = e.target.value.replace(/\D/g,'');
+    if(e.target.value.length>=4){m.focus();m.select();}
+    sync();
+  });
+  m.addEventListener('input',function(e){
+    e.target.value = e.target.value.replace(/\D/g,'');
+    if(e.target.value.length>=2){d.focus();d.select();}
+    sync();
+  });
+  d.addEventListener('input',function(e){
+    e.target.value = e.target.value.replace(/\D/g,'');
+    sync();
+  });
+  // Backspaceで空になった場合、前のフィールドに戻る
+  m.addEventListener('keydown',function(e){
+    if(e.key==='Backspace' && !e.target.value){y.focus();}
+  });
+  d.addEventListener('keydown',function(e){
+    if(e.key==='Backspace' && !e.target.value){m.focus();}
+  });
+
+  // カレンダー選択 → 3入力へ同期
+  if(picker){
+    picker.addEventListener('change', function(e){
+      const v = e.target.value;
+      if(v && /^\d{4}-\d{2}-\d{2}$/.test(v)){
+        const parts = v.split('-');
+        y.value = parts[0];
+        m.value = parts[1];
+        d.value = parts[2];
+        state.answers['q-transfer-date'] = v;
+        checkTransferDate();
+      } else if(!v){
+        y.value = ''; m.value = ''; d.value = '';
+        state.answers['q-transfer-date'] = '';
+        checkTransferDate();
+      }
+    });
+  }
+}
+
+// ===== 転入日チェック：本日から1年以上前なら警告を表示 =====
+function checkTransferDate(){
+  const iso = state.answers['q-transfer-date'];
+  const w = document.getElementById('date-warning');
+  if(!w)return;
+  if(!iso){
+    w.classList.add('hidden');
+    return;
+  }
+  if(isTransferDateOver1Year(iso)){
+    w.textContent = '⚠ 入力された転入日（' + iso + '）は、本日から1年以上前のため、移住支援金の対象外となります（要綱 別表第1の2(2)：申請日において転入後1年以内）。';
+    w.classList.remove('hidden');
+  } else {
+    w.classList.add('hidden');
+  }
+}
+
+// 入力日が本日から1年以上前か判定（共通関数）
+function isTransferDateOver1Year(iso){
+  if(!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso))return false;
+  const inputDate = new Date(iso + 'T00:00:00');
+  if(isNaN(inputDate.getTime()))return false;
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const oneYearAgo = new Date(today);
+  oneYearAgo.setFullYear(today.getFullYear() - 1);
+  return inputDate < oneYearAgo;
+}
+
+// 入力日と本日を比較して「転入済」「転入予定」を導出する
+function deriveTransferStatus(iso){
+  if(!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso))return '';
+  const inputDate = new Date(iso + 'T00:00:00');
+  if(isNaN(inputDate.getTime()))return '';
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  return inputDate <= today ? 'recent' : 'planned';
+}
+
+// STEP 2 の 2-1 表示を、STEP 0 の転入日入力から最新化する
+function updateTransferStatusDisplay(){
+  const display = document.getElementById('q-2-1-display');
+  if(!display)return;
+  const iso = state.answers['q-transfer-date'];
+  const status = deriveTransferStatus(iso);
+  const todayStr = new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
+  if(!iso){
+    display.className = 'auto-status auto-status-empty';
+    display.innerHTML = '<div class="auto-status-main">⚠️ 転入日が未入力です</div><div class="auto-status-note">STEP 0（基本情報）に戻って転入日をご入力ください。</div>';
+    return;
+  }
+  if(status==='recent'){
+    display.className = 'auto-status auto-status-recent';
+    display.innerHTML = '<div class="auto-status-main">転入済</div><div class="auto-status-note">STEP 0で入力された転入日（' + iso + '）と本日（' + todayStr + '）の比較から自動判定しました。本日時点で転入後1年以内のため、対象要件を満たします。</div>';
+  } else if(status==='planned'){
+    display.className = 'auto-status auto-status-planned';
+    display.innerHTML = '<div class="auto-status-main">転入予定</div><div class="auto-status-note">STEP 0で入力された転入日（' + iso + '）と本日（' + todayStr + '）の比較から自動判定しました。今後の転入予定として扱われます。</div>';
+  } else {
+    display.className = 'auto-status auto-status-empty';
+    display.innerHTML = '<div class="auto-status-main">⚠️ 転入日の判定ができませんでした</div><div class="auto-status-note">STEP 0で正しい転入日（YYYY-MM-DD形式）をご入力ください。</div>';
+  }
+}
+
+// 初期化
+updateProgress('welcome');
+setupDateAutoAdvance();
+</script>
+</body>
+</html>
